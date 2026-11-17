@@ -14,8 +14,9 @@ var cli struct {
 	User    string    `short:"u" required:""`
 	After   time.Time `short:"a" format:"15:04:05"`
 	Before  time.Time `short:"b" format:"15:04:05"`
-  Subs    []string  `short:"s" sep:","`
-  Flairs  []string  `short:"f" name:"flair" sep:"none"`
+    Subs    []string  `short:"s" sep:","`
+	Titles  []string  `short:"t" sep:"none"`
+    Flairs  []string  `short:"f" name:"flair" sep:"none"`
 	Ignore  []string  `short:"i" sep:"," enum:"gif,image,video,gallery"`
 	Arctic  bool      `default:"true" negatable:""`
 }
