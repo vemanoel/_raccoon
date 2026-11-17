@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"time"
+	"os"
 
 	"github.com/alecthomas/kong"
 )
@@ -21,3 +22,11 @@ var cli struct {
     Flairs  []string  `name:"flair" sep:"none"`
 	Only    []string  `sep:"," enum:"gif,image,video,gallery"`
 } `embed:"" envprefix:"RACCOON_"`
+
+func init() {
+  err := kong.Parse(&cli).Run()
+  if err != nil {
+	  fmt.Println(err)
+	  os.Exit(1)
+  }
+}
