@@ -1,4 +1,4 @@
-package internal
+package cmd
 
 import (
 	"fmt"
@@ -8,11 +8,7 @@ import (
 	"github.com/alecthomas/kong"
 )
 
-var cli struct {
-	Browser struct {
-		Name string `env:"NAME"`
-		Prof string `env:"PROFILE"`
-	} `embed:"" envprefix:"BROWSER_" prefix:"browser-"`
+var cmd struct {
 	Output  string    `default:"." env:"OUTPUT"`
 	User    string    `required:""`
 	After   time.Time `format:"15:04:05"`
@@ -21,12 +17,17 @@ var cli struct {
 	Titles  []string  `sep:"none"`
     Flairs  []string  `name:"flair" sep:"none"`
 	Only    []string  `sep:"," enum:"gif,image,video,gallery"`
+	Profile string	  `env:"BROWSER"`
 } `embed:"" envprefix:"RACCOON_"`
 
 func init() {
-  err := kong.Parse(&cli).Run()
+  err := kong.Parse(&cmd).Run()
   if err != nil {
 	  fmt.Println(err)
 	  os.Exit(1)
   }
+}
+
+func main() {
+	//
 }
