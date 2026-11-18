@@ -1,7 +1,7 @@
 package cookies
 
 type reader interface {
-	read() ([]*http.Cookie, error)
+	read(string) ([]*http.Cookie, error)
 }
 
 func Read(s string) ([]*http.Cookie, error) {
@@ -13,17 +13,13 @@ func Read(s string) ([]*http.Cookie, error) {
 	var r reader
 
 	if info.Mode().IsRegular() {
-		r = browserReader{
-			profile: s,
-		}
+		r = netscapeReader{}
 	} else if info.IsDir() {
-		r = netscapeReader{
-			path: s,
-		}
+		r = firefoxReader{}
 	} else {
 		return nil, fmt.Errorf("")
 	}
 
-	return r.read()
+	return r.read(s)
 }
 

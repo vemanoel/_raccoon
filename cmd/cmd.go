@@ -9,6 +9,7 @@ import (
 )
 
 var cmd struct {
+	Config	kong.ConfigFlag `env:"CONFIG_FILE"`
 	Output  string    `default:"." env:"OUTPUT"`
 	User    string    `required:""`
 	After   time.Time `format:"15:04:05"`
@@ -18,14 +19,18 @@ var cmd struct {
     Flairs  []string  `name:"flair" sep:"none"`
 	Only    []string  `sep:"," enum:"gif,image,video,gallery"`
 	Profile string	  `env:"BROWSER"`
-} `embed:"" envprefix:"RACCOON_"`
+}
 
 func init() {
-  err := kong.Parse(&cmd).Run()
-  if err != nil {
-	  fmt.Println(err)
-	  os.Exit(1)
-  }
+  ctx := kong.Parse(
+  	&cmd,
+  	kong.Name("raccoon"),
+  	kong.UsageOnError(),
+  	kong.Configuration(kong.JSON),
+  	kong.DefaultEnvVars("RACCOON"),
+  )
+
+  ctx.FatalIfErrorf(ctx.Run())
 }
 
 func main() {

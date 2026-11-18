@@ -16,11 +16,11 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type browserReader struct {
+type firefoxReader struct {
 	profile string
 }
 
-func (self *browserReader) copyFile(src, dst string) error {
+func (self *firefoxReader) copyFile(src, dst string) error {
 	in, err := os.Open(src)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (self *browserReader) copyFile(src, dst string) error {
 	return out.Close()
 }
 
-func (self *browserReader) cloneDB() (string, error) {
+func (self *firefoxReader) cloneDB() (string, error) {
 	src := filepath.Join(self.profile, "cookies.sqlite")
 
 	dst, err := os.MkdirTemp("/dev/shm", "*")
@@ -77,7 +77,7 @@ func (self *browserReader) cloneDB() (string, error) {
 	return dst, nil
 }
 
-func (self *browserReader) openClonedDB() (*sql.DB, func(), error) {
+func (self *firefoxReader) openClonedDB() (*sql.DB, func(), error) {
 	path, err := self.cloneDB()
 	if err != nil {
 		return nil, nil, err
@@ -96,7 +96,7 @@ func (self *browserReader) openClonedDB() (*sql.DB, func(), error) {
 	return clone, cleanup, nil
 }
 
-func (self *browserReader) read() ([]*http.Cookie, error) {
+func (self *firefoxReader) read() ([]*http.Cookie, error) {
 	db, cleanup, err := self.openClonedDB()
 	if err != nil {
 		return nil, err

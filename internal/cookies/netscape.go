@@ -7,6 +7,7 @@ import (
 	"io"
 	"bufio"
 	"strconv"
+	"bytes"
 	"strings"
 	"net/http"
 	"os"
@@ -21,41 +22,43 @@ type netscapeReader struct {
 }
 
 func (self *netscapeReader) read([]*http.Cookie, error) {
-	data, err := os.ReadFile(self.path)
+	content, err := os.ReadFile(self.path)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []*http.Cookie
+	scanner := bufio.NewScanner(bytes.NewReader(content))
 
-	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+	var result []*http.Cookie
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 
-		if line == "" || strings.HasPrefix(line, "#") {
+		if line == "" || line[0] == '#' {
 			continue
 		}
 
-		fields := strings.Fields(line, "\t")
+		fields := strings.Fields(line)
 		if len(fields) != 7 {
 			continue
 		}
 
 		cookie := &http.Cookie{
 			Domain:   fields[0],
+			HttpOnly: strings.HasPrefix(
+				fields[0],
+				"#HttpOnly_",
+			),
 			Path:     fields[2],
 			Secure:   fields[3] == "TRUE",
 			Name:     fields[5],
 			Value:    fields[6],
-			HttpOnly: false,
 		}
 
 		expires, err := strconv.ParseInt(fields[4], 10, 64)
 		if err != nil {
 			return nil, err
 		}
-
 		if expires > 0 {
 			cookie.Expires = time.Unix(expires, 0)
 		}
